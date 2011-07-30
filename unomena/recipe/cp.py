@@ -19,7 +19,7 @@ class CP(Egg):
         super(CP, self).__init__(buildout, name, options)
         
         # optional parameters
-        self.root = self.options.get('root', '')
+        self.root_path = self.options.get('root_path', '')
         self.paths = [path for path in self.options['paths'].split('\n') if path]
         
 
@@ -75,13 +75,8 @@ class CP(Egg):
                     dest_fqn = os.path.join(self.root_path, dirname.replace(source, dest), filename)
                     
                     # ensure the destination directory exists
-                    try:
-                        os.makedirs(dest_fqn)
-                    except OSError as exc: # Python >2.5
-                        if exc.errno == errno.EEXIST:
-                            pass
-                        else: 
-                            raise
+                    if not os.path.exists(os.path.dirname(dest_fqn)):
+                        os.makedirs(os.path.dirname(dest_fqn))
 
                     if os.path.exists(dest_fqn):
                         # determine if we need to update the file
@@ -95,6 +90,6 @@ class CP(Egg):
                             self.logger.info('files differ: %s' % (source_fqn,))
                         
                     shutil.copy(source_fqn, dest_fqn)
-                    self.logger.info('uploaded %s to %s:%s' % (source_fqn, dest_fqn))
+                    self.logger.info('uploaded %s to %s' % (source_fqn, dest_fqn))
 
 
